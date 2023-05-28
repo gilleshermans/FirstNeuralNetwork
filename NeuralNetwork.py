@@ -34,7 +34,22 @@ class Layer:
             weightedInputs.append(weightedInput)
         return weightedInputs
 
+class NeuralNetwork:
+    layers : list
 
+    # Sets up the network
+    def NeuralNetwork(layerSizes : list):
+        pass
+
+    # Caluclates the outputs from the inputs
+    def CalculateOuputs(inputs : list):
+        pass
+
+    # Find the highest input using the function above
+    def Classify(inputs):
+        pass
+
+    
 # Test program
 if __name__ == "__main__":
     network = Layer()
