@@ -34,7 +34,7 @@ class Layer:
             for incomingNode in range(self.numIncoming):
                 weightedInput += inputs[incomingNode] * self.weights[incomingNode] ####
 
-            activations.append(self.ActivationFunction(weightedInput, "sigmoid"))
+            activations.append(self.ActivationFunction(weightedInput, "relu"))
         return activations
     
 
@@ -44,8 +44,16 @@ class Layer:
                 return 1
             else:
                 return 0
+            
         elif mode == "sigmoid":
             return 1/(1+np.exp(-value))
+        
+        elif mode == "relu":
+            #return max(0.0, value)
+            if value > 0:
+                return value
+            else:
+                return 0
 
 
 # Create the network itself
