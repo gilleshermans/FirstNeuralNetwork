@@ -1,6 +1,8 @@
+import numpy as np
 from random import random
 from UtilityFunctions import *
 
+# Create the layer
 class Layer:
     # Main Variabels
     numIncoming : int
@@ -25,16 +27,28 @@ class Layer:
 
     # Calculating the ouput
     def calculateOutputs(self, inputs: list):
-        weightedInputs = []
+        activations = []
         weightedInput = []
         for outcomingNode in range(self.numOutcoming):
             weightedInput = self.biases[outcomingNode]
             for incomingNode in range(self.numIncoming):
                 weightedInput += inputs[incomingNode] * self.weights[incomingNode] ####
 
-            weightedInputs.append(weightedInput)
-        return weightedInputs
+            activations.append(self.ActivationFunction(weightedInput, "sigmoid"))
+        return activations
+    
 
+    def ActivationFunction(self, value, mode):
+        if mode == "stepped":
+            if value > 0:
+                return 1
+            else:
+                return 0
+        elif mode == "sigmoid":
+            return 1/(1+np.exp(-value))
+
+
+# Create the network itself
 class NeuralNetwork:
     layers = []
 
@@ -51,8 +65,6 @@ class NeuralNetwork:
             inputs = layer.calculateOutputs(inputs)
             
         return inputs
-    
-
 
     # Find the highest input using the function above
     def Classify(self, inputs):
@@ -72,47 +84,30 @@ if __name__ == "__main__":
     for i in range(50):
         # Calculate current ouput
         output = network.calculateOuputs([0, 0])
-        if output[0] > 0:
-            output = 1
-        else:
-            output = 0
-        error = 0 - output
+
+        error = 0 - output[0]
         network.layers[0].weights[0] += error * 0
         network.layers[0].weights[1] += error * 0
 
         output = network.calculateOuputs([0, 1])
-        if output[0] > 0:
-            output = 1
-        else:
-            output = 0
-        error = 1 - output
+
+        error = 1 - output[0]
         network.layers[0].weights[0] += error * 0
         network.layers[0].weights[1] += error * 1
         output = network.calculateOuputs([1, 0])
-        if output[0] > 0:
-            output = 1
-        else:
-            output = 0
-        error = 1 - output
+
+        error = 1 - output[0]
         network.layers[0].weights[0] += error * 1
         network.layers[0].weights[1] += error * 0
 
         output = network.calculateOuputs([1, 1])
-        if output[0] > 0:
-            output = 1
-        else:
-            output = 0
-        error = 1 - output
+
+        error = 1 - output[0]
         network.layers[0].weights[0] += error * 1
         network.layers[0].weights[1] += error * 1
 
     x = int(input())
     y = int(input())
     output = network.calculateOuputs([x, y])
-
-    if output[0] > 0:
-        output = 1
-    else:
-        output = 0
 
     print("The output is:", output)
