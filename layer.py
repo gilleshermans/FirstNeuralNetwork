@@ -27,10 +27,11 @@ class Layer:
     def calculateOutputs(self, inputs: list):
         activations = []
         weightedInput = []
+
         for outcomingNode in range(self.numOutcoming):
             weightedInput = self.biases[outcomingNode]
             for incomingNode in range(self.numIncoming):
-                weightedInput += inputs[incomingNode] * self.weights[incomingNode] ####
+                weightedInput += inputs[incomingNode] * self.weights[incomingNode]
 
             activations.append(self.ActivationFunction(weightedInput, "stepped"))
         return activations
@@ -47,3 +48,8 @@ class Layer:
         
         elif mode == "relu":
             return max(0.0, value)
+    
+    def nodeCost(self, activation, expectedOutput):
+        error = activation - expectedOutput
+        return error * error
+    
