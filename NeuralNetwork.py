@@ -9,13 +9,41 @@ class NeuralNetwork:
     layers = []
 
     # Sets up the network
-    def NeuralNetwork(self, layerSizes : list):
+    def neuralNetwork(self, layerSizes : list):
         for i in range(len(layerSizes)-1):
             layer = Layer()
             layer.layer(layerSizes[i], layerSizes[i+1])
             self.layers.append(layer)
 
-    # Caluclates the outputs from the inputs
+    def learn(self, trainigData, learnRate):
+        h = 0.0001
+        originalCost = self.loss(trainigData)
+
+        # For each layer in the network...
+        for layer in self.layers:
+            
+            # Updating the weights
+            for biasIndex in range(len(layer.numIncoming) * len(layer.numOutcoming)):
+                layer.weights[biasIndex] += h
+                deltaCost = self.loss(trainigData) - originalCost
+                layer.weights[biasIndex] -= h
+                layer.costGradientWeights[biasIndex] = deltaCost / h
+
+            # Updating the biases
+            for biasIndex in range(len(layer.numIncoming) * len(layer.numOutcoming)):
+                layer.biases[biasIndex] += h
+                deltaCost = self.loss(trainigData) - originalCost
+                layer.biases[biasIndex] -= h
+                layer.costGradientbiases[biasIndex] = deltaCost / h
+
+        self.applyAllGradients(learnRate)
+
+
+    def applyAllGradients(self, learnRate):
+        for layer in self.layers:
+            layer.applyGradients(learnRate)
+
+    # Caluclates the outputs by feeding the inputs through the entire network
     def calculateOuputs(self, inputs : list):
         for layer in self.layers:
             inputs = layer.calculateOutputs(inputs)
@@ -26,14 +54,14 @@ class NeuralNetwork:
     def Classify(self, inputs):
         outputs = self.calculateOutputs(inputs)
         return IndexOfMaxValue(outputs)
-    
+
     def loss_for_one(self, dataPoint):
         outputs = self.calculateOuputs(dataPoint.input)
         outputLayer = self.layers[-1]
         cost = 0
 
         for node in range(len(outputs)):
-            cost += outputLayer.nodeCost(outputs[node], dataPoint.expectedOutput) # expectedOutput should be dataPoints.expectedOutput[nodeout]
+            cost += outputLayer.nodeCost(outputs[node], dataPoint.expectedOutput) # should be dataPoints.expectedOutputs[nodeout]
         
         return cost
 
@@ -43,7 +71,6 @@ class NeuralNetwork:
             totalCost += self.loss_for_one(dataPoint)
         return totalCost / len(data) # Because we need an average
     
-
     
 # Test program
 # I know that this code is very badly coded
@@ -52,7 +79,7 @@ class NeuralNetwork:
 if __name__ == "__main__":
     # Set up the network
     network = NeuralNetwork()
-    network.NeuralNetwork([2, 1])
+    network.neuralNetwork([2, 1])
 
     # These are all of our inputs
     node1 = Node([0, 0], 0)
@@ -61,7 +88,7 @@ if __name__ == "__main__":
     node4 = Node([1, 1], 1)
     
     # We train on a depth of 50 (this means 50 iterations)
-    for i in range(1):
+    for i in range(50):
         # Calculate current ouput
         output = network.calculateOuputs(node1.input)
 
@@ -93,5 +120,6 @@ if __name__ == "__main__":
     x = int(input())
     y = int(input())
     output = network.calculateOuputs([x, y])
+    
 
-    print("The output is:", output)
+    print("The output is:", output[0])

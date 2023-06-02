@@ -1,3 +1,4 @@
+from utilityFunctions import *
 import numpy as np  
 # Create the layer
 
@@ -5,6 +6,8 @@ class Layer:
     # Main Variabels
     numIncoming : int
     numOutcoming : int
+    costGradientWeights : list
+    costGradientBiases : list
     weights = []
     biases = []
 
@@ -15,15 +18,26 @@ class Layer:
         self.weights = []
         self.biases = []
 
-        # I dont know what the values should be yet
+        # Generating a random value for each weight and dividing it by the square root of numImcoming
         for i in range(numIncoming * numOutcoming):
-            weight = 1
+            weight = InitializeRandomWeight(numIncoming)
             self.weights.append(weight)
+
         for j in range(numOutcoming):
             bias = 0
             self.biases.append(bias)
 
-    # Calculating the ouput
+    # Updating weights and biases (gradient descend)
+    def applyGradients(self, learnRate):
+        for nodeOut in range(len(self.numOutcoming)):
+            self.biases[nodeOut] -= self.costGradientBiases[nodeOut] * learnRate
+
+        for node in range(len(self.numIncoming) * len(self.numOutcoming)):
+            self.weights[node] = self.costGradientWeights[node] * learnRate
+            
+    
+
+    # Calculating the ouputs by looking at the corresponding inputs
     def calculateOutputs(self, inputs: list):
         activations = []
         weightedInput = []
@@ -32,8 +46,8 @@ class Layer:
             weightedInput = self.biases[outcomingNode]
             for incomingNode in range(self.numIncoming):
                 weightedInput += inputs[incomingNode] * self.weights[incomingNode]
-
-            activations.append(self.ActivationFunction(weightedInput, "stepped"))
+                
+            activations.append(self.ActivationFunction(weightedInput, "sigmoid"))
         return activations
     
     def ActivationFunction(self, value, mode):
