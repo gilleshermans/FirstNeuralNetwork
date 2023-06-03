@@ -7,6 +7,8 @@ from node import *
 # Create the network itself
 class NeuralNetwork:
     layers = []
+    currentWeights = []
+    currentBiases = []
 
     # Sets up the network
     def neuralNetwork(self, layerSizes : list):
@@ -28,6 +30,7 @@ class NeuralNetwork:
                 deltaCost = self.loss(trainigData) - originalCost
                 layer.weights[node] -= h
                 layer.costGradientWeights[node] = deltaCost / h
+                self.currentWeights = layer.weights
 
             # Updating the biases
             for biasIndex in range(len(layer.biases)):
@@ -35,6 +38,7 @@ class NeuralNetwork:
                 deltaCost = self.loss(trainigData) - originalCost
                 layer.biases[biasIndex] -= h
                 layer.costGradientBiases[biasIndex] = deltaCost / h
+                self.currentBiases = layer.biases
 
         self.applyAllGradients(learnRate)
 
@@ -76,7 +80,7 @@ class NeuralNetwork:
 if __name__ == "__main__":
     # Set up the network
     network = NeuralNetwork()
-    network.neuralNetwork([2, 1])
+    network.neuralNetwork([2, 1, 1])
 
     # These are all of our inputs
     node1 = Node([0, 0], 0)
@@ -86,12 +90,15 @@ if __name__ == "__main__":
     
     # We train on a depth of 50 (this means 50 iterations)
     loss = network.loss([node1, node2, node3, node4])
-    while loss > 0.0001:
-        network.learn([node1, node2, node3, node4], 1)
+    while loss > 0.1:
+        network.learn([node1, node2, node3, node4], 0.1)
 
         loss = network.loss([node1, node2, node3, node4])
         print(loss)
+
     
+    saveData("OR_DataSet.txt", network.currentWeights, network.currentBiases)
+
     x = int(input())
     y = int(input())
     output = network.calculateOuputs([x, y])
