@@ -6,8 +6,8 @@ class Layer:
     # Main Variabels
     numIncoming : int
     numOutcoming : int
-    costGradientWeights : list
-    costGradientBiases : list
+    costGradientWeights = []
+    costGradientBiases = []
     weights = []
     biases = []
 
@@ -29,11 +29,11 @@ class Layer:
 
     # Updating weights and biases (gradient descend)
     def applyGradients(self, learnRate):
-        for nodeOut in range(len(self.numOutcoming)):
+        for nodeOut in range(self.numOutcoming):
             self.biases[nodeOut] -= self.costGradientBiases[nodeOut] * learnRate
 
-        for node in range(len(self.numIncoming) * len(self.numOutcoming)):
-            self.weights[node] = self.costGradientWeights[node] * learnRate
+        for node in range(self.numIncoming * self.numOutcoming):
+            self.weights[node] -= self.costGradientWeights[node] * learnRate
             
     
 
@@ -61,7 +61,9 @@ class Layer:
             return 1/(1+np.exp(-value))
         
         elif mode == "relu":
-            return max(0.0, value)
+            if value >= 0:
+                return value
+            return 0.0
     
     def nodeCost(self, activation, expectedOutput):
         error = activation - expectedOutput

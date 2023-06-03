@@ -23,18 +23,18 @@ class NeuralNetwork:
         for layer in self.layers:
             
             # Updating the weights
-            for biasIndex in range(len(layer.numIncoming) * len(layer.numOutcoming)):
-                layer.weights[biasIndex] += h
+            for node in range(layer.numIncoming * layer.numOutcoming):
+                layer.weights[node] += h
                 deltaCost = self.loss(trainigData) - originalCost
-                layer.weights[biasIndex] -= h
-                layer.costGradientWeights[biasIndex] = deltaCost / h
+                layer.weights[node] -= h
+                layer.costGradientWeights.append(deltaCost / h)
 
             # Updating the biases
-            for biasIndex in range(len(layer.numIncoming) * len(layer.numOutcoming)):
+            for biasIndex in range(len(layer.biases)):
                 layer.biases[biasIndex] += h
                 deltaCost = self.loss(trainigData) - originalCost
                 layer.biases[biasIndex] -= h
-                layer.costGradientbiases[biasIndex] = deltaCost / h
+                layer.costGradientBiases.append(deltaCost / h)
 
         self.applyAllGradients(learnRate)
 
@@ -73,9 +73,6 @@ class NeuralNetwork:
     
     
 # Test program
-# I know that this code is very badly coded
-# but it's just a test, please forgive me :)
-
 if __name__ == "__main__":
     # Set up the network
     network = NeuralNetwork()
@@ -85,34 +82,12 @@ if __name__ == "__main__":
     node1 = Node([0, 0], 0)
     node2 = Node([0, 1], 1)
     node3 = Node([1, 0], 1)
-    node4 = Node([1, 1], 1)
+    node4 = Node([1, 1], 0)
     
     # We train on a depth of 50 (this means 50 iterations)
-    for i in range(50):
-        # Calculate current ouput
-        output = network.calculateOuputs(node1.input)
-
-        error = 0 - output[0]
-        network.layers[0].weights[0] += error * 0
-        network.layers[0].weights[1] += error * 0
-
-        output = network.calculateOuputs(node2.input)
-
-        error = 1 - output[0]
-        network.layers[0].weights[0] += error * 0
-        network.layers[0].weights[1] += error * 1
-        
-        output = network.calculateOuputs(node3.input)
-
-        error = 1 - output[0]
-        network.layers[0].weights[0] += error * 1
-        network.layers[0].weights[1] += error * 0
-
-        output = network.calculateOuputs(node4.input)
-
-        error = 1 - output[0]
-        network.layers[0].weights[0] += error * 1
-        network.layers[0].weights[1] += error * 1
+    loss = network.loss([node1, node2, node3, node4])
+    while True:
+        network.learn([node1, node2, node3, node4], 0.1)
 
         loss = network.loss([node1, node2, node3, node4])
         print(loss)
