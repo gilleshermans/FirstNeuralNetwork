@@ -27,14 +27,14 @@ class NeuralNetwork:
                 layer.weights[node] += h
                 deltaCost = self.loss(trainigData) - originalCost
                 layer.weights[node] -= h
-                layer.costGradientWeights.append(deltaCost / h)
+                layer.costGradientWeights[node] = deltaCost / h
 
             # Updating the biases
             for biasIndex in range(len(layer.biases)):
                 layer.biases[biasIndex] += h
                 deltaCost = self.loss(trainigData) - originalCost
                 layer.biases[biasIndex] -= h
-                layer.costGradientBiases.append(deltaCost / h)
+                layer.costGradientBiases[biasIndex] = deltaCost / h
 
         self.applyAllGradients(learnRate)
 
@@ -82,16 +82,16 @@ if __name__ == "__main__":
     node1 = Node([0, 0], 0)
     node2 = Node([0, 1], 1)
     node3 = Node([1, 0], 1)
-    node4 = Node([1, 1], 0)
+    node4 = Node([1, 1], 1)
     
     # We train on a depth of 50 (this means 50 iterations)
     loss = network.loss([node1, node2, node3, node4])
-    while True:
-        network.learn([node1, node2, node3, node4], 0.1)
+    while loss > 0.0001:
+        network.learn([node1, node2, node3, node4], 1)
 
         loss = network.loss([node1, node2, node3, node4])
         print(loss)
-
+    
     x = int(input())
     y = int(input())
     output = network.calculateOuputs([x, y])

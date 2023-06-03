@@ -23,9 +23,14 @@ class Layer:
             weight = InitializeRandomWeight(numIncoming)
             self.weights.append(weight)
 
+            self.costGradientWeights.append(0)
+
         for j in range(numOutcoming):
             bias = 0
             self.biases.append(bias)
+
+            self.costGradientBiases.append(0)
+        
 
     # Updating weights and biases (gradient descend)
     def applyGradients(self, learnRate):
