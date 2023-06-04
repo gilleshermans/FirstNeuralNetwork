@@ -47,11 +47,10 @@ class NeuralNetwork:
     def learnWithBackPropagation(self, trainingBatch, learnRate):
         for dataPoint in trainingBatch:
             self.updateAllGradients(dataPoint)
-
         
         self.applyAllGradients(learnRate / len(trainingBatch))
         self.clearAllGradients()
-
+        
     def applyAllGradients(self, learnRate):
         for layer in self.layers:
             layer.applyGradients(learnRate)
@@ -74,7 +73,7 @@ class NeuralNetwork:
 
         for hiddenLayerIndex in range(len(self.layers) - 2):
             hiddenLayer = self.layers[len(self.layers) - 2]
-            nodeValues = hiddenLayer.CalculateHiddenLayerNodeValues(self.layers[hiddenLayerIndex + 1], nodeValues)
+            nodeValues = hiddenLayer.calculateHiddenLayerNodeValues(self.layers[hiddenLayerIndex + 1], nodeValues)
             hiddenLayer.updateGradients(nodeValues)
 
     # Caluclates the outputs by feeding the inputs through the entire network
@@ -95,7 +94,7 @@ class NeuralNetwork:
         cost = 0
 
         for node in range(len(outputs)):
-            cost += outputLayer.nodeCost(outputs[node], dataPoint.expectedOutput[node]) # should be dataPoints.expectedOutputs[nodeout]
+            cost += outputLayer.nodeCost(outputs[node], dataPoint.expectedOutput[node])
         
         return cost
 
@@ -104,6 +103,14 @@ class NeuralNetwork:
         for dataPoint in data:
             totalCost += self.loss_for_one(dataPoint)
         return totalCost / len(data) # Because we need an average
+    
+    def get_model(self):
+        weights = []
+        biases = []
+        for layer in self.layers:
+            weights.append(layer.weights)
+            biases.append(layer.biases)
+        return weights, biases
     
     
 # Test program
@@ -126,8 +133,11 @@ if __name__ == "__main__":
         loss = network.loss([node1, node2, node3, node4])
         print(loss)
 
-    
-    saveData("OR_DataSet.txt", network.currentWeights, network.currentBiases)
+    weights, biases = network.get_model()
+    print("weights:" + str(weights))
+    print("biases:" + str(biases))
+
+    saveData("OR_DataSet.txt", weights, biases)
 
     x = int(input())
     y = int(input())

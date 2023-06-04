@@ -22,7 +22,7 @@ class Layer:
 
         # Generating a random value for each weight and dividing it by the square root of numImcoming
         for i in range(numIncoming * numOutcoming):
-            weight = InitializeRandomWeight(numIncoming)
+            weight = InitializeRandomWeight(numIncoming, numOutcoming)
             self.weights.append(weight)
 
             self.costGradientWeights.append(0)
@@ -83,19 +83,19 @@ class Layer:
     
     def calculateHiddenLayerNodeValues(self, oldLayer, oldNodeValues):
         newNodeValues = []
-        for newNodeIndex in range(len(self.numOutcoming)):
+        for newNodeIndex in range(self.numOutcoming):
             newNodeValue = 0
             for oldNodeIndex in range(len(oldNodeValues)):
                 weightedInputDerivative = oldLayer.weights[oldNodeIndex + newNodeIndex]
                 newNodeValue += weightedInputDerivative * oldNodeValues[oldNodeIndex]
-            newNodeValue *= self.activationDerivative(self.weightedInputs[newNodeIndex], self.mode)
+            newNodeValue *= self.activationDerivative(self.activations[newNodeIndex], self.mode)
             newNodeValues.append(newNodeValue)
 
         return newNodeValues
 
     def updateGradients(self, nodeValues):
-        for nodeIn in range(self.numIncoming):
-            for nodeOut in range(self.numOutcoming):
+        for nodeOut in range(self.numOutcoming):
+            for nodeIn in range(self.numIncoming):
                 derivativeCostToWeight = self.inputs[nodeIn] * self.nodeValues[nodeOut]
                 self.costGradientWeights[nodeIn] += derivativeCostToWeight 
                 self.costGradientWeights[nodeIn + nodeOut - 1] += derivativeCostToWeight 

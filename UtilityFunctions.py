@@ -6,16 +6,15 @@ def IndexOfMaxValue(values : list):
     max = sortedList[-1]
     return values.index(max)
 
-def InitializeRandomWeight(numIncoming):
-    randomValue = random.uniform(-1.0, 1.0)
-    return randomValue / math.sqrt(numIncoming)
+def InitializeRandomWeight(numIncoming, numOutcoming):
+    randomValue = random.uniform(numIncoming, numOutcoming)
+    return randomValue * math.sqrt(2/(numIncoming + numOutcoming))
 
 def saveData(file : str, weights, biases):
     f = open(file, 'w')
-    for weight in weights:
-        f.write(str(weight) + "\n")
-    for bias in biases:
-        f.write(str(bias) + "\n")
+    f.write(str(weights))
+    f.write("\n")
+    f.write(str(biases))
     f.close()
 
 def getData(file : str):
